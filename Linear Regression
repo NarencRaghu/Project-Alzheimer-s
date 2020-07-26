@@ -20,7 +20,7 @@ from sklearn.metrics import mean_squared_error
 output = []
 
 # input
-path = 'C:/Users/cvrag.DESKTOP-D95JQ48/.spyder-py3/dataset.xlsx'
+path = 'dataset.xlsx'
 df = []
 Target = input("Enter Target Value: ")
 Delay = input("Enter Delay Value: ")
@@ -32,9 +32,9 @@ eTIV = input("Enter eTIV Value: ")
 nWBV = input("Enter nWBC Value: ")
 AS0 = input("Enter AS0 Value: ")
 
-
+#adding data into excel file so that the input is feature scaled
 book = load_workbook(path)
-temp = pd.read_excel(r'C:\Users\cvrag.DESKTOP-D95JQ48\.spyder-py3\dataset.xlsx')
+temp = pd.read_excel(r'dataset.xlsx')
 sheet = book.active
 if Target == '':
     sheet['A375'] = temp['Target'].mean()
@@ -72,14 +72,12 @@ if AS0 == '':
     sheet['I375'] = temp['AS0'].mean()
 else:
     sheet['I375'] = AS0
-book.save('C:/Users/cvrag.DESKTOP-D95JQ48/.spyder-py3/dataset.xlsx')
+book.save('dataset.xlsx')
 #postinput import of dataset
-dataset = pd.read_excel(r'C:\Users\cvrag.DESKTOP-D95JQ48\.spyder-py3\dataset.xlsx')
+dataset = pd.read_excel(r'dataset.xlsx')
 pd.set_option('display.expand_frame_repr', False)
-#scaling
-#1	1107	0	77	27	1	1159	0.733	1.515
-#0	1447	0	93	30	0	1488	0.735	1.179
 
+#feature scaling to account for differences in data ranges
 dataset = pd.get_dummies(dataset, columns = ['Gender'])
 standardScaler = StandardScaler()
 columns_to_scale = ['Delay', 'Age', 'MMSE', 'eTIV', 'CDR','nWBV', 'AS0']
