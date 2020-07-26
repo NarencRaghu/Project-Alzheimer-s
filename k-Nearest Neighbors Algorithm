@@ -97,4 +97,4 @@ X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.33, rand
 knn_classifier = KNeighborsClassifier(n_neighbors = 5)
 knn_classifier.fit(X_train, y_train)
 y_predk = knn_classifier.predict(last_row)
-print(sqrt(mean_squared_error(y_test,knn_classifier.predict(X_test))))
+print(y_predk)
