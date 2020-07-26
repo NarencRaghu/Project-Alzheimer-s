@@ -1,0 +1,100 @@
+# Basic
+import numpy as np
+import pandas as pd
+import warnings
+warnings.filterwarnings('ignore')
+
+# Other libraries
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
+
+
+# Machine Learning
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.svm import SVC
+# Import necessary libraries
+from openpyxl import load_workbook
+from math import sqrt
+from sklearn.metrics import mean_squared_error
+
+output = []
+
+# input
+path = 'dataset.xlsx'
+df = []
+Target = input("Enter Target Value: ")
+Delay = input("Enter Delay Value: ")
+Gender = input("Enter Gender Value: ")
+Age = input("Enter Age Value: ")
+MMSE = input("Enter MMSE Value: ")
+CDR = input("Enter CDR Value: ")
+eTIV = input("Enter eTIV Value: ")
+nWBV = input("Enter nWBC Value: ")
+AS0 = input("Enter AS0 Value: ")
+
+#adding data into excel file so that the input is feature scaled
+book = load_workbook(path)
+temp = pd.read_excel(r'dataset.xlsx')
+sheet = book.active
+if Target == '':
+    sheet['A375'] = temp['Target'].mean()
+else:
+    sheet['A375'] = Target
+if Delay == '':
+    sheet['B375'] = temp['Delay'].mean()
+else:
+    sheet['B375'] = Delay
+if Gender == '':
+    sheet['C375'] = temp['Gender'].mean()
+else:
+    sheet['C375'] = Gender
+if Age == '':
+    sheet['D375'] = temp['Age'].mean()
+else:
+    sheet['D375'] = Age
+if MMSE == '':
+    sheet['E375'] = temp['MMSE'].mean()
+else:
+    sheet['E375'] = MMSE
+if CDR == '':
+    sheet['F375'] = temp['CDR'].mean()
+else:
+    sheet['F375'] = CDR
+if eTIV == '':
+    sheet['G375'] = temp['eTIV'].mean()
+else:
+    sheet['G375'] = eTIV
+if nWBV == '':
+    sheet['H375'] = temp['nWBV'].mean()
+else:
+    sheet['H375'] = nWBV
+if AS0 == '':
+    sheet['I375'] = temp['AS0'].mean()
+else:
+    sheet['I375'] = AS0
+book.save('dataset.xlsx')
+#postinput import of dataset
+dataset = pd.read_excel(r'dataset.xlsx')
+pd.set_option('display.expand_frame_repr', False)
+
+#feature scaling to account for differences in data ranges
+dataset = pd.get_dummies(dataset, columns = ['Gender'])
+standardScaler = StandardScaler()
+columns_to_scale = ['Delay', 'Age', 'MMSE', 'eTIV', 'CDR','nWBV', 'AS0']
+dataset[columns_to_scale] = standardScaler.fit_transform(dataset[columns_to_scale])
+
+#extract last line which is input so that it isn't used to train the data
+last_row = pd.concat([dataset.tail(1)])
+del last_row['Target']
+dataset.drop(dataset.tail(1).index,inplace=True)
+
+#assinging variables
+y = dataset['Target']
+X = dataset.drop(['Target'], axis = 1)
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.33, random_state = 0)
+
+#K-Nearest Neighbors Implementation
+knn_classifier = KNeighborsClassifier(n_neighbors = 5)
+knn_classifier.fit(X_train, y_train)
+y_predk = knn_classifier.predict(last_row)
+print(sqrt(mean_squared_error(y_test,knn_classifier.predict(X_test))))
